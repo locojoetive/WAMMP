@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Postman
+  - Platform
   layers:
   - Default
   - TransparentFX
@@ -13,10 +15,10 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
-  - 
-  - 
+  - Postman
+  - Jump
+  - Mailbox
+  - Turn
   - 
   - 
   - 
