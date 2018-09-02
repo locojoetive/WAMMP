@@ -11,20 +11,26 @@ public class Reload : MonoBehaviour
     private void Start()
     {
         currentStage = char.GetNumericValue(SceneManager.GetActiveScene().name.Substring(5,1)[0]);
+        Debug.Log(currentStage);
         postman = GameObject.FindGameObjectWithTag("Postman").GetComponent<PostmanStateHandler>();
     }
     private void Update()
     {
-        if (postman.isMissionComplete())
+        if (!nextStage && postman.isMissionComplete())
         {
             nextStage = true;
+            currentStage++;
         } else if (nextStage && Input.GetKeyDown(KeyCode.Space))
         {
-            Debug.Log("The next scene is under construction!");
+            SceneManager.LoadScene("Stage" + currentStage, LoadSceneMode.Single);
         }
-        if (Input.GetKeyDown(KeyCode.R) || postman.isDying())
+        if (Input.GetKey(KeyCode.R) || postman.isDying())
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            SceneManager.LoadScene("Title", LoadSceneMode.Single);
         }
     }
 

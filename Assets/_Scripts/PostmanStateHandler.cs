@@ -22,7 +22,8 @@ public class PostmanStateHandler : MonoBehaviour {
         dying = false,
         grounded = false,
         walled = false,
-        wedgeJump = false;
+        wedgeJump = false,
+        cameraRooted = false;
     private int whatIsGround = 1 << 0,
         whatIsJumpable = 1 << 9,
         whatIsAim = 1 << 10,
@@ -124,6 +125,7 @@ public class PostmanStateHandler : MonoBehaviour {
         DrawBox(groundCheckBack.position, groundCheckSize, Color.red);
         DrawBox(wallCheckDown.position, wallCheckSize, Color.red);
         DrawBox(wallCheckUp.position, wallCheckSize, Color.red);
+        DrawBox(wallCheckUp.position, letsSeeSize, Color.red);
         DrawBox(wedgeCheck.position, wedgeCheckSize, Color.red);
     }
 
@@ -141,7 +143,7 @@ public class PostmanStateHandler : MonoBehaviour {
 
     private void positionSensors()
     {
-        groundCheckFront.localPosition = new Vector2(collider.offset.x + 0.125f * collider.size.x, collider.offset.y - 0.5f * collider.size.y);
+        groundCheckFront.localPosition = new Vector2(collider.offset.x + 0.25f * collider.size.x, collider.offset.y - 0.5f * collider.size.y);
         groundCheckBack.localPosition = new Vector2(collider.offset.x - 0.125f * collider.size.x, collider.offset.y - 0.5f * collider.size.y);
         wallCheckUp.localPosition = new Vector2(collider.offset.x + 0.5f * collider.size.x, collider.offset.y + 0.25f * collider.size.y);
         wallCheckDown.localPosition = new Vector2(collider.offset.x + 0.5f * collider.size.x, collider.offset.y - 0.25f * collider.size.y);
@@ -171,7 +173,7 @@ public class PostmanStateHandler : MonoBehaviour {
     }
     public bool gottaClimb()
     {
-        return walledDown && wedged && !walledUp && 
+        return walledDown && wedged  && 
             (grounded || !groundedFront && !groundedBack);
     }
     public bool gottaCrawl()
@@ -197,10 +199,10 @@ public class PostmanStateHandler : MonoBehaviour {
     }
     public float getSteigung()
     {
-        if (walledDown)
+        if (wedged)
         {
-            Debug.Log(walledDown.gameObject.transform.eulerAngles);
-            return 1.0f - (walledDown.gameObject.transform.eulerAngles.z / 90F);
+            Debug.Log(wedged.gameObject.transform.eulerAngles);
+            return 1.0f - (wedged.gameObject.transform.eulerAngles.z / 90F);
         } else
         {
             return 0.0f;

@@ -60,7 +60,7 @@ public class PostmanMoveScript : MonoBehaviour {
                 Vector2.right :
                 -Vector2.right;
             direction = state.getSteigung() * acceleration * direction;
-            Debug.Log("Crawling");
+            Debug.Log("Crawling" + rb.velocity);
             move(direction);
         }
         else {
