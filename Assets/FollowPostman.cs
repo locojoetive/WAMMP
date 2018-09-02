@@ -11,16 +11,20 @@ public class FollowPostman : MonoBehaviour {
         maxSpeed = 20F;
     public Transform target;
     public bool grounded = false, rootCamera = false, rooted = false;
+    public bool followYAxis = false;
 
     void Start () {
         target = GameObject.FindGameObjectWithTag("Postman").transform;    	
 	}
 	void Update () {
-        rooted = grounded;
-        grounded = target.GetComponent<PostmanStateHandler>().isGrounded();
-        if(!rootCamera && !rooted && grounded)
+        if (!followYAxis)
         {
-            rootCamera = true;
+            rooted = grounded;
+            grounded = target.GetComponent<PostmanStateHandler>().isGrounded();
+            if (!rootCamera && !rooted && grounded)
+            {
+                rootCamera = true;
+            }
         }
         Vector3 position = target.position;
         float left = minX;
@@ -28,15 +32,21 @@ public class FollowPostman : MonoBehaviour {
         float bottom = minY;
         float up = maxY;
         interpolation = maxSpeed * Time.deltaTime;
-
         position.x = Mathf.Lerp(transform.position.x, position.x, interpolation);
-        if (rootCamera)
+        if (!followYAxis)
         {
-            position.y = Mathf.Lerp(transform.position.y, position.y, 0.5f * interpolation);
-        } else position.y = transform.position.y;
-        if (Mathf.Abs(transform.position.y - position.y) < 0.1f)
-            rootCamera = false;
-
+            if (rootCamera)
+            {
+                position.y = Mathf.Lerp(transform.position.y, position.y, 0.5f * interpolation);
+            }
+            else position.y = transform.position.y;
+            if (Mathf.Abs(transform.position.y - position.y) < 0.1f)
+                rootCamera = false;
+        }
+        else
+        {
+            position.y = Mathf.Lerp(transform.position.y, position.y, interpolation);
+        }
         position.z = transform.position.z;
 
         position.x = position.x < minX ? minX :

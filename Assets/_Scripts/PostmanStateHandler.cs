@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PostmanStateHandler : MonoBehaviour {
+    public Animator animator;
     public Transform groundCheckFront,
         groundCheckBack,
         wallCheckDown,
@@ -32,12 +33,17 @@ public class PostmanStateHandler : MonoBehaviour {
 
     void Start () {
         collider = GetComponent<CapsuleCollider2D>();
+        animator = GetComponent<Animator>();
 	}
 	
 	void FixedUpdate () {
         positionSensors();
         HandleState();
 	}
+    private void Update()
+    {
+        HandleAnimations();
+    }
 
     private void HandleState()
     {
@@ -121,6 +127,11 @@ public class PostmanStateHandler : MonoBehaviour {
         walled = walledUp && walledDown;
         grounded = groundedFront && groundedBack;
         facingRight = transform.localScale.x > 0.0f;
+        if (missionAim)
+        {
+            missionAim.GetComponent<Animator>().SetBool("WIN", true);
+        }
+
         DrawBox(groundCheckFront.position, groundCheckSize, Color.red);
         DrawBox(groundCheckBack.position, groundCheckSize, Color.red);
         DrawBox(wallCheckDown.position, wallCheckSize, Color.red);
@@ -207,5 +218,9 @@ public class PostmanStateHandler : MonoBehaviour {
         {
             return 0.0f;
         }
+    }
+    void HandleAnimations()
+    {
+        animator.SetBool("grounded", grounded);
     }
 }
