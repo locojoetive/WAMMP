@@ -5,23 +5,26 @@ using UnityEngine.SceneManagement;
 
 public class Reload : MonoBehaviour
 {
-    public string currentStage = "";
-    public PostmanStateHandler player;
+    public double currentStage = 0;
+    public PostmanStateHandler postman;
     public bool nextStage = false;
     private void Start()
     {
-        currentStage = SceneManager.GetActiveScene().name;
-        player = GameObject.FindGameObjectWithTag("Postman").GetComponent<PostmanStateHandler>();
+        currentStage = char.GetNumericValue(SceneManager.GetActiveScene().name.Substring(5,1)[0]);
+        postman = GameObject.FindGameObjectWithTag("Postman").GetComponent<PostmanStateHandler>();
     }
     private void Update()
     {
-        if (player.isMissionComplete())
+        if (postman.isMissionComplete())
         {
             nextStage = true;
-        }
-        if (nextStage && Input.GetKeyDown(KeyCode.Space))
+        } else if (nextStage && Input.GetKeyDown(KeyCode.Space))
         {
             Debug.Log("The next scene is under construction!");
+        }
+        if (Input.GetKeyDown(KeyCode.R) || postman.isDying())
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
     }
 

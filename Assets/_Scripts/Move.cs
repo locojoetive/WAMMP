@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MoveScript : MonoBehaviour {
+public class Move : MonoBehaviour {
     private new MeshRenderer renderer;
     public Material materialActive,
         materialInactive;
-    public bool xAxisControll = true,
-        yAxisControl = true;
+    public bool axisControll = true,
+        rotationControll = true;
     public float moveDistance = 0.0f,
+        rotateDistance = 1.0f,
         newValue = 0.0f,
-        timeFrame = 0.0f;
+        timeFrame = 0.1f;
     public bool active = false;
 
     void Start() {
@@ -21,16 +22,40 @@ public class MoveScript : MonoBehaviour {
     {
         if (active)
         {
-            newValue += Time.deltaTime;
-            moveDistance = newValue > timeFrame ? 1.0f : 0.0f;
-            newValue = moveDistance == 1.0f ? 0.0f : newValue;
-            HandleXAxisControll();
-            HandleYAxisControll();
+            HandleControlls();
+            CalculateMoveStep();
+            if (axisControll) {
+                HandleXAxisControll();
+                HandleYAxisControll();
+            }
+            if(rotationControll)
+                HandleRotation();
             renderer.material = materialActive;
         } else
         {
             renderer.material = materialInactive;
         }
+    }
+
+    void HandleControlls()
+    {
+        if (Input.GetKey(KeyCode.Space))
+        {
+            rotationControll = true;
+            axisControll = false;
+        }
+        else
+        {
+            rotationControll = false;
+            axisControll = true;
+        }
+    }
+
+    void CalculateMoveStep()
+    {
+        newValue += Time.deltaTime;
+        moveDistance = newValue > timeFrame ? 1.0f : 0.0f;
+        newValue = moveDistance == 1.0f ? 0.0f : newValue;
     }
 
     void HandleXAxisControll()
@@ -57,9 +82,17 @@ public class MoveScript : MonoBehaviour {
         }
     }
 
-    void HandleYAxisRotation()
+    void HandleRotation()
     {
-
+        float rotateAngle = moveDistance * rotateDistance;
+        if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.UpArrow))
+        {
+            transform.Rotate(Vector3.forward, rotateAngle);
+        }
+        if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.DownArrow))
+        {
+            transform.Rotate(Vector3.forward, -rotateAngle);
+        }
     }
 
     public bool isActive()
