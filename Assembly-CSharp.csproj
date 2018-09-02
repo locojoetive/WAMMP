@@ -61,11 +61,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\HandlePlatforms.cs" />
-    <Compile Include="Assets\MoveScript.cs" />
-    <Compile Include="Assets\PostmanMoveScript.cs" />
-    <Compile Include="Assets\PostmanStateHandler.cs" />
-    <Compile Include="Assets\Reload.cs" />
+    <Compile Include="Assets\_Scripts\HandlePlatforms.cs" />
+    <Compile Include="Assets\_Scripts\Move.cs" />
+    <Compile Include="Assets\_Scripts\PostmanMoveScript.cs" />
+    <Compile Include="Assets\_Scripts\PostmanStateHandler.cs" />
+    <Compile Include="Assets\_Scripts\Reload.cs" />
+    <Compile Include="Assets\_Scripts\Rotate.cs" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>C:/_gameJam/WAMMP/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>
