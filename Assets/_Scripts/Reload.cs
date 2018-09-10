@@ -5,32 +5,46 @@ using UnityEngine.SceneManagement;
 
 public class Reload : MonoBehaviour
 {
-    public double currentStage = 0;
+    public double currentStage = 1;
     public PostmanStateHandler postman;
     public bool nextStage = false;
+    public string activeName;
     private void Start()
     {
-        currentStage = char.GetNumericValue(SceneManager.GetActiveScene().name.Substring(5,1)[0]);
-        Debug.Log(currentStage);
-        postman = GameObject.FindGameObjectWithTag("Postman").GetComponent<PostmanStateHandler>();
+        activeName = SceneManager.GetActiveScene().name;
     }
     private void Update()
     {
-        if (!nextStage && postman.isMissionComplete())
+        activeName = SceneManager.GetActiveScene().name;
+        if (Input.GetKey(KeyCode.Space) && 
+            (activeName == "Title" || activeName == "Controls"))
         {
-            nextStage = true;
-            currentStage++;
-        } else if (nextStage && Input.GetKeyDown(KeyCode.Space))
-        {
-            SceneManager.LoadScene("Stage" + currentStage, LoadSceneMode.Single);
+            if(activeName.Equals("Title") )
+            {
+                SceneManager.LoadScene("Controls", LoadSceneMode.Single);
+            } else if (activeName.Equals("Controls"))
+            {
+                SceneManager.LoadScene("Stage1", LoadSceneMode.Single);
+            }
         }
-        if (Input.GetKey(KeyCode.R) || postman.isDying())
+        if (activeName[0] == 'S')
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        }
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            SceneManager.LoadScene("Title", LoadSceneMode.Single);
+            postman = GameObject.FindGameObjectWithTag("Postman").GetComponent<PostmanStateHandler>();
+            currentStage = char.GetNumericValue(SceneManager.GetActiveScene().name.Substring(5, 1)[0]);
+            if (postman.isMissionComplete() && Input.GetKeyDown(KeyCode.Space))
+            {
+                currentStage++;
+                SceneManager.LoadScene("Stage" + currentStage, LoadSceneMode.Single);
+            }
+
+            if (Input.GetKey(KeyCode.R) || postman.isDying())
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            }
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                SceneManager.LoadScene("Title", LoadSceneMode.Single);
+            }
         }
     }
 

@@ -43,12 +43,7 @@ public class PostmanMoveScript : MonoBehaviour {
     private void HandleAxisMovement()
     {
         Vector2 direction = Vector2.zero;
-        if (state.gottaTurn())
-        {
-            TurnAround();
-            Debug.Log("Turn");
-        }
-        else if (state.gottaClimb())
+        if (state.gottaClimb())
         {
             direction = Vector2.up;
             Debug.Log("CLimbing");
@@ -99,7 +94,7 @@ public class PostmanMoveScript : MonoBehaviour {
 
     public void TurnAround()
     {
-        transform.localScale = new Vector3(-1.0f, transform.localScale.y, transform.localScale.z);
+     
     }
 
     private void move (Vector2 direction)

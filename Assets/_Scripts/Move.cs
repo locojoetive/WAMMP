@@ -99,12 +99,8 @@ public class Move : MonoBehaviour {
     {
         active = true;
     }
-
-    private void OnCollisionEnter2D(Collision2D collision)
+    public void setUnactive()
     {
-        if (collision.collider.name == "Postman")
-        {
-            active = false;
-        }
+        active = false;
     }
 }

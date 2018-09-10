@@ -34,10 +34,11 @@ public class PostmanStateHandler : MonoBehaviour {
     void Start () {
         collider = GetComponent<CapsuleCollider2D>();
         animator = GetComponent<Animator>();
+        facingRight = transform.localScale.x > 0.0f;
+        positionSensors();
 	}
 	
 	void FixedUpdate () {
-        positionSensors();
         HandleState();
 	}
     private void Update()
@@ -47,11 +48,16 @@ public class PostmanStateHandler : MonoBehaviour {
 
     private void HandleState()
     {
+        if (walledUp && !jumpFrom)
+        {
+            transform.localScale = Vector3.Scale(new Vector3(-1.0f, 1.0f, 1.0f), transform.localScale);
+            facingRight = !facingRight;
+            Debug.Log("Gotta Turn to " + transform.localScale);
+        }
         Vector2 groundCheckSize = new Vector2(0.125f * collider.size.x, boxSize),
             wallCheckSize = new Vector2(boxSize, 0.25f * collider.size.y),
             letsSeeSize = new Vector2(0.5f * collider.size.x, 0.25f * collider.size.y),
             wedgeCheckSize = new Vector2(boxSize,boxSize);
-
         dying = Physics2D.OverlapBox(
             groundCheckFront.position,
             groundCheckSize,
@@ -125,8 +131,7 @@ public class PostmanStateHandler : MonoBehaviour {
              whatIsAim
          );
         walled = walledUp && walledDown;
-        grounded = groundedFront && groundedBack;
-        facingRight = transform.localScale.x > 0.0f;
+        grounded = groundedFront || groundedBack;
         if (missionAim)
         {
             missionAim.GetComponent<Animator>().SetBool("WIN", true);
@@ -184,7 +189,7 @@ public class PostmanStateHandler : MonoBehaviour {
     }
     public bool gottaClimb()
     {
-        return walledDown && wedged  && 
+        return walledDown && !walledUp  && 
             (grounded || !groundedFront && !groundedBack);
     }
     public bool gottaCrawl()
@@ -206,7 +211,7 @@ public class PostmanStateHandler : MonoBehaviour {
     }
     public bool gottaTurn()
     {
-        return walledDown && walledUp && !jumpFrom;
+        return walledUp;
     }
     public float getSteigung()
     {
