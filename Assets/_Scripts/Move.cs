@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Move : MonoBehaviour {
-    private new MeshRenderer renderer;
-    public Material materialActive,
-        materialInactive;
     public bool axisControll = true,
         rotationControll = true;
     public float moveDistance = 0.0f,
@@ -15,7 +12,6 @@ public class Move : MonoBehaviour {
     public bool active = false;
 
     void Start() {
-        renderer = GetComponent<MeshRenderer>();
     }
 
     void Update()
@@ -30,10 +26,9 @@ public class Move : MonoBehaviour {
             }
             if(rotationControll)
                 HandleRotation();
-            renderer.material = materialActive;
         } else
         {
-            renderer.material = materialInactive;
+
         }
     }
 
@@ -104,12 +99,8 @@ public class Move : MonoBehaviour {
     {
         active = true;
     }
-
-    private void OnCollisionEnter2D(Collision2D collision)
+    public void setUnactive()
     {
-        if (collision.collider.name == "Postman")
-        {
-            active = false;
-        }
+        active = false;
     }
 }

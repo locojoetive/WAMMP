@@ -67,6 +67,7 @@
     <Compile Include="Assets\_Scripts\PostmanStateHandler.cs" />
     <Compile Include="Assets\_Scripts\Reload.cs" />
     <Compile Include="Assets\_Scripts\Rotate.cs" />
+    <Compile Include="Assets\FollowPostman.cs" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>C:/_gameJam/WAMMP/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>
