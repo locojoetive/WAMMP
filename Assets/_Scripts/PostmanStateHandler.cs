@@ -171,8 +171,7 @@ public class PostmanStateHandler : MonoBehaviour {
     }
     public bool gottaClimb()
     {
-        return walledDown && wedged && !walledUp && 
-            (grounded || !groundedFront && !groundedBack);
+        return walledDown && !walledUp;
     }
     public bool gottaCrawl()
     {
@@ -193,7 +192,7 @@ public class PostmanStateHandler : MonoBehaviour {
     }
     public bool gottaTurn()
     {
-        return walledDown && walledUp && !jumpFrom;
+        return walled;
     }
     public float getSteigung()
     {
