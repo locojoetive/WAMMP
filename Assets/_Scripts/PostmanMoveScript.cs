@@ -8,8 +8,8 @@ public class PostmanMoveScript : MonoBehaviour {
     public float maxSpeed = 1.0f,
         acceleration = 1.0f,
         jumpHeight = 3.0f;
-    // Geht Besser
-    private bool rest = false;
+    private bool rest = false,
+        waiting = false;
 
     void Start () {
         ReferenceComponents();
@@ -21,37 +21,40 @@ public class PostmanMoveScript : MonoBehaviour {
 
     private void HandleMovement()
     {
-        if (!rest && !state.isMissionComplete())
-        {
-            HandleJump();
-            HandleAxisMovement();
-        }
-        else if (!rest)
+        if (!state.isWaiting()) {
+            if (!rest && !state.isMissionComplete())
+            {
+                HandleJump();
+                HandleAxisMovement();
+            }
+            else if (!rest)
+            {
+                rb.velocity = Vector2.zero;
+                rest = true;
+            }
+            else
+            {
+                if (state.isGrounded())
+                {
+                    rb.AddForce(jumpHeight * Vector2.up, ForceMode2D.Impulse);
+                }
+            }
+        } else
         {
             rb.velocity = Vector2.zero;
-            rest = true;
-        }
-        else
-        {
-            if (state.isGrounded())
-            {
-                rb.AddForce(jumpHeight * Vector2.up, ForceMode2D.Impulse);
-            }
         }
     }
 
     private void HandleAxisMovement()
     {
         Vector2 direction = Vector2.zero;
-        if (state.gottaTurn())
+        if (state.gottaTurn() && !state.gottaWallJump())
         {
             TurnAround();
-            Debug.Log("Turn");
         }
         else if (state.gottaClimb())
         {
-            direction = Vector2.up;
-            Debug.Log("CLimbing");
+            direction = 0.75f * Vector2.up;
             move(direction);
         }
         else if (state.gottaCrawl())
@@ -59,55 +62,51 @@ public class PostmanMoveScript : MonoBehaviour {
             direction = state.isFacingRight() ?
                 Vector2.right :
                 -Vector2.right;
-            direction = state.getSteigung() * acceleration * direction;
-            Debug.Log("Crawling");
+            direction += Vector2.up;
             move(direction);
         }
         else {
             direction = state.isFacingRight() ?
                 Vector2.right:
                 -Vector2.right;
-            Debug.Log("Walking");
             move(direction);
         }
         
     }
 
-    
     private void HandleJump()
     {
-        if (state.gottaJump())
+        Vector2 direction = Vector2.zero;
+        if (state.gottaWallJump())
+        {
+            direction = state.isFacingRight() ?
+                - Vector2.right :
+                Vector2.right;
+            direction = direction + Vector2.up;
+            rb.velocity = Vector2.zero;
+            TurnAround();
+            rb.AddForce(jumpHeight * direction, ForceMode2D.Impulse);
+            Debug.Log("Lets jump the shit outta this wall");
+        } else if (state.gottaJump())
         {
             rb.AddForce(jumpHeight * Vector2.up, ForceMode2D.Impulse);
             Debug.Log("Lets jump the shit outta this block");
-        }
-        else if(state.gottaWedgeJump())
-        {
-            rb.AddForce(jumpHeight * Vector2.up, ForceMode2D.Impulse);
-            Debug.Log("Lets jump the shit outta this wedge");
-        }
-        else if (state.gottaWallJump())
-        {
-            Vector2 right = state.isFacingRight()?
-                -acceleration * Vector2.right:
-                acceleration * Vector2.right;
-            rb.velocity = Vector2.zero;
-            rb.AddForce(right + jumpHeight * Vector2.up, ForceMode2D.Impulse);
-            TurnAround();
         }
     }
 
     public void TurnAround()
     {
-        transform.localScale = new Vector3(-1.0f, transform.localScale.y, transform.localScale.z);
+        transform.localScale = new Vector3(
+            -transform.localScale.x,
+            transform.localScale.y,
+            transform.localScale.z);
+        state.toggleFacing();
     }
 
     private void move (Vector2 direction)
     {
-        if (rb.velocity.magnitude < maxSpeed)
-        {
+        if(rb.velocity.magnitude < maxSpeed)
             rb.AddForce(acceleration * direction, ForceMode2D.Force);
-        }
     }
 
     private void ReferenceComponents()

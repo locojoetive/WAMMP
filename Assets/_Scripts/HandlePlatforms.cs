@@ -7,7 +7,7 @@ public class HandlePlatforms : MonoBehaviour {
     public int indexOfActive = 0;
     void Start () {
         referencePlatforms();
-        if (platforms != null) platforms[indexOfActive].setActive();
+        platforms[indexOfActive].setActive();
 	}
 	
 	void Update () {
@@ -20,7 +20,6 @@ public class HandlePlatforms : MonoBehaviour {
             {
                 indexOfActive = -1;
             }
-            Debug.Log("SwitchingTo" + indexOfActive);
         }
 	}
 

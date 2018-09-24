@@ -3,19 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Move : MonoBehaviour {
-    private new MeshRenderer renderer;
-    public Material materialActive,
-        materialInactive;
     public bool axisControll = true,
         rotationControll = true;
-    public float moveDistance = 0.0f,
+    public float moveDistance = 0.5f,
         rotateDistance = 1.0f,
         newValue = 0.0f,
         timeFrame = 0.1f;
     public bool active = false;
 
     void Start() {
-        renderer = GetComponent<MeshRenderer>();
     }
 
     void Update()
@@ -23,17 +19,12 @@ public class Move : MonoBehaviour {
         if (active)
         {
             HandleControlls();
-            CalculateMoveStep();
             if (axisControll) {
                 HandleXAxisControll();
                 HandleYAxisControll();
             }
             if(rotationControll)
                 HandleRotation();
-            renderer.material = materialActive;
-        } else
-        {
-            renderer.material = materialInactive;
         }
     }
 
@@ -54,7 +45,7 @@ public class Move : MonoBehaviour {
     void CalculateMoveStep()
     {
         newValue += Time.deltaTime;
-        moveDistance = newValue > timeFrame ? 1.0f : 0.0f;
+        moveDistance = Time.deltaTime;
         newValue = moveDistance == 1.0f ? 0.0f : newValue;
     }
 
@@ -104,12 +95,8 @@ public class Move : MonoBehaviour {
     {
         active = true;
     }
-
-    private void OnCollisionEnter2D(Collision2D collision)
+    public void setUnactive()
     {
-        if (collision.collider.name == "Postman")
-        {
-            active = false;
-        }
+        active = false;
     }
 }

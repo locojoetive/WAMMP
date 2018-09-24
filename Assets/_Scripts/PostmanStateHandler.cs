@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PostmanStateHandler : MonoBehaviour {
+    public Animator animator;
     public Transform groundCheckFront,
         groundCheckBack,
         wallCheckDown,
@@ -22,7 +23,9 @@ public class PostmanStateHandler : MonoBehaviour {
         dying = false,
         grounded = false,
         walled = false,
-        wedgeJump = false;
+        wedgeJump = false,
+        cameraRooted = false,
+        waiting = false;
     private int whatIsGround = 1 << 0,
         whatIsJumpable = 1 << 9,
         whatIsAim = 1 << 10,
@@ -31,20 +34,25 @@ public class PostmanStateHandler : MonoBehaviour {
 
     void Start () {
         collider = GetComponent<CapsuleCollider2D>();
+        animator = GetComponent<Animator>();
+        facingRight = transform.localScale.x > 0.0f;
+        positionSensors();
 	}
 	
 	void FixedUpdate () {
-        positionSensors();
         HandleState();
 	}
+    private void Update()
+    {
+        HandleAnimations();
+    }
 
     private void HandleState()
     {
-        Vector2 groundCheckSize = new Vector2(0.125f * collider.size.x, boxSize),
-            wallCheckSize = new Vector2(boxSize, 0.25f * collider.size.y),
+        Vector2 groundCheckSize = new Vector2(0.25f * collider.size.x, boxSize),
+            wallCheckSize = new Vector2(boxSize, 0.5f * collider.size.y),
             letsSeeSize = new Vector2(0.5f * collider.size.x, 0.25f * collider.size.y),
             wedgeCheckSize = new Vector2(boxSize,boxSize);
-
         dying = Physics2D.OverlapBox(
             groundCheckFront.position,
             groundCheckSize,
@@ -75,8 +83,14 @@ public class PostmanStateHandler : MonoBehaviour {
             0.0f,
             whatIsJumpable
         );
-        jumpFrom = Physics2D.OverlapBox(
+        jumpFrom = jumpOn ? null : Physics2D.OverlapBox(
             wallCheckDown.position,
+            wallCheckSize,
+            0.0f,
+            whatIsJumpable
+        );
+        jumpFrom = jumpFrom && !jumpOn? jumpFrom : Physics2D.OverlapBox(
+            wallCheckUp.position,
             wallCheckSize,
             0.0f,
             whatIsJumpable
@@ -118,12 +132,16 @@ public class PostmanStateHandler : MonoBehaviour {
              whatIsAim
          );
         walled = walledUp && walledDown;
-        grounded = groundedFront && groundedBack;
-        facingRight = transform.localScale.x > 0.0f;
+        grounded = groundedFront || groundedBack;
+        if (missionAim)
+        {
+            missionAim.GetComponent<Animator>().SetBool("WIN", true);
+        }
+
         DrawBox(groundCheckFront.position, groundCheckSize, Color.red);
         DrawBox(groundCheckBack.position, groundCheckSize, Color.red);
-        DrawBox(wallCheckDown.position, wallCheckSize, Color.red);
-        DrawBox(wallCheckUp.position, wallCheckSize, Color.red);
+        DrawBox(wallCheckDown.position, wallCheckSize, Color.green);
+        DrawBox(wallCheckUp.position, wallCheckSize, Color.green);
         DrawBox(wedgeCheck.position, wedgeCheckSize, Color.red);
     }
 
@@ -145,7 +163,6 @@ public class PostmanStateHandler : MonoBehaviour {
         groundCheckBack.localPosition = new Vector2(collider.offset.x - 0.125f * collider.size.x, collider.offset.y - 0.5f * collider.size.y);
         wallCheckUp.localPosition = new Vector2(collider.offset.x + 0.5f * collider.size.x, collider.offset.y + 0.25f * collider.size.y);
         wallCheckDown.localPosition = new Vector2(collider.offset.x + 0.5f * collider.size.x, collider.offset.y - 0.25f * collider.size.y);
-        wallCheckDown.localPosition = new Vector2(collider.offset.x + 0.5f * collider.size.x, collider.offset.y - 0.25f * collider.size.y);
         wedgeCheck.localPosition = new Vector2(collider.offset.x + 0.5f * collider.size.x, collider.offset.y - 0.5f * collider.size.y + 0.5f * boxSize);
     }
 
@@ -165,14 +182,17 @@ public class PostmanStateHandler : MonoBehaviour {
     {
         return missionAim;
     }
+    public bool isWaiting()
+    {
+        return waiting;
+    }
     public bool isWalled()
     {
         return walled;
     }
     public bool gottaClimb()
     {
-        return walledDown && wedged && !walledUp && 
-            (grounded || !groundedFront && !groundedBack);
+        return ( wedged || walledDown ) && !walledUp;
     }
     public bool gottaCrawl()
     {
@@ -187,23 +207,34 @@ public class PostmanStateHandler : MonoBehaviour {
     {
         return jumpFrom;
     }
-    public bool gottaWedgeJump()
-    {
-        return false;
-    }
     public bool gottaTurn()
     {
-        return walledDown && walledUp && !jumpFrom;
+        return walledUp;
     }
-    public float getSteigung()
+    public void letsWait()
     {
-        if (walledDown)
+        waiting = true;
+    }
+    public void letsGo()
+    {
+        waiting = false;
+    }
+    void HandleAnimations()
+    {
+        animator.SetBool("grounded", grounded);
+        animator.SetBool("waiting", waiting);
+    }
+
+    public void toggleFacing()
+    {
+        facingRight = !facingRight;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "NPC")
         {
-            Debug.Log(walledDown.gameObject.transform.eulerAngles);
-            return 1.0f - (walledDown.gameObject.transform.eulerAngles.z / 90F);
-        } else
-        {
-            return 0.0f;
+            waiting = true;
         }
     }
 }
