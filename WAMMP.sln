@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{E168570A-E4E1-5CB1-9E84-2DCF7BB9BCD2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WAMMP", "Assembly-CSharp.csproj", "{E168570A-E4E1-5CB1-9E84-2DCF7BB9BCD2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
